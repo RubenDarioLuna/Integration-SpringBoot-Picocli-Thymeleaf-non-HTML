@@ -1,0 +1,11 @@
+ Dear [(${name})],
+
+ [(${body})]
+
+ Tags:
+ [# th:each="tag : ${tags}" ]
+     [(${tag})]
+ [/]
+
+ Sincerely,
+ The other Developer.
