@@ -6,9 +6,9 @@ Basic integration between ***Spring Boot***, ***picocli*** and ***Thymeleaf*** (
 
 Project created with [IntelliJ IDEA](https://www.jetbrains.com/idea/) and [Spring Initializr](https://start.spring.io/).
 
-##Dependency Management
+## Dependency Management
 
-######Maven
+###### Maven
 
 **picocli**
 ```xml
