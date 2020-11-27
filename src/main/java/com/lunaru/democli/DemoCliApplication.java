@@ -31,7 +31,7 @@ public class DemoCliApplication implements CommandLineRunner, ExitCodeGenerator
     @Override
     public int getExitCode()
     {
-        return 0;
+        return _exitCode;
     }
 
     public static void main(String[] args) {
