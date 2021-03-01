@@ -1,0 +1,15 @@
+package [(${class.package})]
+
+[(${class.typeAccess})] [(${class.type})] [(${class.name})]
+{
+    //attributes
+    [# th:each="attribute : ${class.attributes}" ]
+         /**
+            [(${attribute.comment})]
+         */
+         [(${attribute.typeAccess})] [(${attribute.type})] [(${attribute.name})];
+    [/]
+
+    public [(${class.name})]()
+    {}
+}

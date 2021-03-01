@@ -1,0 +1,47 @@
+package [(${class.package})]
+
+[# th:each="import : ${class.imports}" ]
+    import [(${import})]
+[/]
+
+/**
+   [(${class.comments})]
+*/
+
+[(${class.declaration})]
+{
+    //attributes
+    [# th:each="attribute : ${class.attributes}" ]
+         /**
+            [(${attribute.comment})]
+         */
+         [(${attribute.declaration})];
+    [/]
+
+    //constructors
+[# th:each="constructor : ${class.methods.constructors}" ]
+    [(${constructor.declaration})]( [(${constructor.parameters.declaration})] )
+    {
+        [# th:each="parameter : ${constructor.parameters.list}" ]
+                 this.[(${parameter.name})] = [(${parameter.name})];
+        [/]
+    }
+[/]
+
+    //getters
+[# th:each="getter : ${class.methods.getters}" ]
+    [(${getter.declaration})]()
+    {
+        return getter.return;
+    }
+[/]
+
+    //setters
+[# th:each="setter : ${class.methods.setters}" ]
+    [(${setter.declaration})]( setter.parameter.declaration )
+    {
+        this.[(${setter.attribute})] = [(${setter.parameter})];
+    }
+[/]
+
+}

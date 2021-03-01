@@ -26,7 +26,7 @@ Project created with [IntelliJ IDEA](https://www.jetbrains.com/idea/) and [Sprin
     <artifactId>spring-boot-starter-thymeleaf</artifactId>
 </dependency>
 ```
-If you are missing the Apache Commons OGNL framework libraries:
+> **_NOTE:_** If you are missing the Apache Commons OGNL framework libraries:
 ```xml
 <dependency>
     <groupId>ognl</groupId>
@@ -43,7 +43,7 @@ If you are missing the Apache Commons OGNL framework libraries:
 </dependency>
 ```
 
-Note: The pom already contains all the dependencies.
+> **_NOTE:_** The pom already contains all the dependencies.
 
 ## Settings to send mail (sender) 
 
@@ -64,22 +64,31 @@ mvnw spring-boot:run
 ```
 
 Since we specified no command line arguments, Picocli complains about the missing required option --to and outputs the usage help. We have to pass in command line arguments into our command line call, we can use -Dspring-boot.run.arguments for that purpose:
+
+Without attachment:
 ```bash
-mvnw spring-boot:run -Dspring-boot.run.arguments=" --to test.receiver@yopmail.com --subject Testmail Through this email I want to notify that the integration tests between Spring Boot, PicoCLI and Thymeleaf were successful."
+mvnw spring-boot:run -Dspring-boot.run.arguments="sendMail --to test.receiver@yopmail.com --subject \"New Testmail\" --body \"Through this email I want to notify that the integration tests between Spring Boot, PicoCLI and Thymeleaf were successful.\""
+```
+With attachment:
+```bash
+mvnw spring-boot:run -Dspring-boot.run.arguments="sendMail --to rubenlunamate@gmail.com --subject \"New Testmail\" --body \"Through this email I want to notify that the integration tests between Spring Boot, PicoCLI and Thymeleaf were successful.\" -f \"C:\Users\ruben\Pictures\lunarudev.jpg\""
 ```
 
-[Check receiving mail](www.yopmail.com/?test.receiver)
+> **_NOTE:_** character \ " to add more than one word.
+
+
+Check receiving mail in: www.yopmail.com/?test.receiver (or put an email of your choice)
 
 Options:
- - **--to** : destination email
- - **--subject** : email subject
-
-Parameters:
- - Space after subject : email body (message)
+ - **--to** : destination email. *(Required)*
+ - **--subject or -s** : email subject. *(Not Required, default value configured)*
+ - **--body or -b** : email body (message). *(Not Required, default value configured)*
+ - **--file or -f** : file to attach in the mail. *(Optional)*
  
 ## References
 
 - [picocli Spring Boot example](https://picocli.info/#_spring_boot_example)
 - [Thymeleaf non-HTML](https://blog.codeleak.pl/2017/03/getting-started-with-thymeleaf-3-text.html)
 - [Thymeleaf textual-syntax](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#textual-syntax)
+- [Using the JavaMail MimeMessageHelper](https://docs.spring.io/spring-framework/docs/3.0.0.M3/reference/html/ch26s03.html)
 

@@ -1,6 +1,7 @@
 package com.lunaru.democli;
 
-import com.lunaru.democli.commands.MailCommand;
+import com.lunaru.democli.logic.commands.subcommds.SubCommandSendMail;
+import com.lunaru.democli.logic.commands.MainCommand;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
@@ -13,20 +14,24 @@ import picocli.CommandLine;
 public class DemoCliApplication implements CommandLineRunner, ExitCodeGenerator
 {
     private CommandLine.IFactory _factory;
-    private MailCommand _mailCommand;
+    private MainCommand _mainCommand;
+    private SubCommandSendMail _subCommandSendMail;
     private int _exitCode;
 
-    public DemoCliApplication( CommandLine.IFactory factory, MailCommand mailCommand )
+    public DemoCliApplication( CommandLine.IFactory factory, MainCommand mainCommand, SubCommandSendMail subCommandSendMail )
     {
         this._factory = factory;
-        this._mailCommand = mailCommand;
+        this._mainCommand = mainCommand;
+        this._subCommandSendMail = subCommandSendMail;
     }
 
     @Override
-    public void run(String... args) throws Exception
+    public void run(String... args)
     {
-        _exitCode = new CommandLine( _mailCommand, _factory ).execute(args);
+        CommandLine commandLine = new CommandLine( _mainCommand, _factory );
+        _exitCode = commandLine.execute( args );
     }
+
 
     @Override
     public int getExitCode()
