@@ -1,4 +1,4 @@
-package com.lunaru.democli.common.utilities;
+package com.lunaru.democli.common.utilities.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,9 +8,18 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
+/**
+ * *
+ *
+ * @author ruben
+ * @version 1.0
+ * @since 2/28/2021
+ */
 @Configuration
-public class ThymeleafConfig {
+public class ThymeleafConfig
+{
 
+    //#region Beans
     @Bean(name = "textTemplateEngine")
     public TemplateEngine textTemplateEngine()
     {
@@ -24,7 +33,9 @@ public class ThymeleafConfig {
     {
         return new Context();
     }
+    //#endregion
 
+    //#region Privates Methods
     private ITemplateResolver textTemplateResolver() {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix( "/templates/text/" );
@@ -35,4 +46,5 @@ public class ThymeleafConfig {
         templateResolver.setCacheable( false );
         return templateResolver;
     }
+    //#endregion
 }

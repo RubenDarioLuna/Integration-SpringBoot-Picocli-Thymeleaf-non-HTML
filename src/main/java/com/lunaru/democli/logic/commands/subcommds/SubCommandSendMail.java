@@ -1,11 +1,10 @@
 package com.lunaru.democli.logic.commands.subcommds;
 
 import com.lunaru.democli.common.exceptions.SendMailException;
+import com.lunaru.democli.common.utilities.Properties;
 import com.lunaru.democli.service.contracts.IMailService;
 import com.lunaru.democli.common.entities.Mail;
-import com.lunaru.democli.logic.commands.MainCommand;
 
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -16,19 +15,35 @@ import java.util.concurrent.Callable;
 
 import picocli.CommandLine;
 
+/**
+ * *
+ *
+ * @author ruben
+ * @version 1.0
+ * @since 3/1/2021
+ */
 @Component
-@CommandLine.Command( name = "sendMail" )
+@CommandLine.Command( name = "sendMail",
+                      version = {
+                              "@|green,bg(white) Send mail v1.0.0|@",
+                              "@|green,bg(white) Picocli: " + picocli.CommandLine.VERSION + "|@",
+                              "@|red,bg(white) JVM: ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})|@",
+                              "@|red,bg(white) OS: ${os.name} ${os.version} ${os.arch}|@",
+                              "@|black,bg(white) (c) 2021|@"},
+                      header = "%n@|green,bg(white) Command send mail|@",
+                      description = "This command sends an mail to different destinations!.%n",
+                      mixinStandardHelpOptions = true )
+//The mixinStandardHelpOptions attribute adds --help and --version options
 public class SubCommandSendMail extends BaseSubCommand implements Callable<Integer>
 {
-    @CommandLine.ParentCommand
-    private MainCommand parent;
-
-    //Without @Autowired
+    //#region Privates Attributes
     private IMailService _mailService;
     private TemplateEngine _textTemplateEngine;
     private Context _contextTemplateEngine;
     private Mail _mail;
+    //#endregion
 
+    //#region Options/Parameters
     @CommandLine.Option( names = "--to", description = "email(s) of recipient(s). Separate the emails with a comma",
                          required = true, split = "," )
     String[] _to = {};
@@ -42,54 +57,57 @@ public class SubCommandSendMail extends BaseSubCommand implements Callable<Integ
 
     @CommandLine.Option( names = { "-f", "--file" }, description = "the archive file" )
     File _file = null;
+    //#endregion
 
-
-    public SubCommandSendMail( IMailService mailService, Environment properties, TemplateEngine textTemplateEngine,
+    //#region Constructors
+    /**
+     * Class constructor.
+     * @param mailService
+     * @param textTemplateEngine
+     * @param contextTemplateEngine
+     * @param mail
+     */
+    public SubCommandSendMail( IMailService mailService, TemplateEngine textTemplateEngine,
                                Context contextTemplateEngine, Mail mail ) {
         //Autowiring
         _mailService = mailService;
-        _properties = properties;
         _textTemplateEngine = textTemplateEngine;
         _contextTemplateEngine = contextTemplateEngine;
         _mail = mail;
-
-        _printMessage = "";
-        _ok = false;
     }
+    //#endregion
 
+    //#region Public Methods
     @Override
-    public Integer call() throws Exception
+    public Integer call()
     {
-        fillMailData();
         try
         {
+            fillMailData();
             _mailService.sendMessage( _mail );
 
-            _printMessage = String.format( _properties.getProperty( "message.mailSent" ),
+            _printMessage = String.format( Properties.getProperty( "message.mailSent" ),
                                            Arrays.toString( _mail.getTo() ), _mail.getSubject(), _mail.getBody() );
             printMessage();
 
             _ok = true;
-
-            /*LOGGER.info( _properties.getProperty( "logger.mailSent" ), mail.getTo(), mail.getSubject(),
-                         mail.getBody() );*/
         }
         catch ( SendMailException e)
         {
-            //LOGGER.error( _properties.getProperty( "printMessage.mailNotSent" ), e );
             _printMessage = e.getMessage();
-            printErrorMessage();
+            printErrorMessage( e.getMessage() );
         }
         catch ( Exception e )
         {
-            //LOGGER.error( _properties.getProperty( "printMessage.general" ), e );
-            _printMessage = _properties.getProperty( "error.general" );
-            printErrorMessage();
+            _printMessage = Properties.getProperty( "error.general" );
+            printErrorMessage( e.getMessage() );
         }
 
         return _ok ? 0 : 1;
     }
+    //#endregion
 
+    //#region Privates Methods
     private void fillMailData()
     {
         _mail.setTo( _to );
@@ -100,12 +118,18 @@ public class SubCommandSendMail extends BaseSubCommand implements Callable<Integ
 
     private String createBody( String body )
     {
-        _contextTemplateEngine.setVariable( "name", "Developer" );
-        _contextTemplateEngine.setVariable( "body", body );
-        _contextTemplateEngine.setVariable( "tags", "#framework #java #spring #picocli #thymeleaf".split(" "));
+        _contextTemplateEngine.setVariable( Properties.getProperty( "template.mail.name" ),
+                                            Properties.getProperty( "defaultValue.mail.name" ) );
+
+        _contextTemplateEngine.setVariable( Properties.getProperty( "template.mail.body" ), body );
+
+        _contextTemplateEngine.setVariable( Properties.getProperty( "template.mail.tags" ),
+                                            splitStringBy( Properties.getProperty( "defaultValue.mail.tags" ),
+                                                           Properties.getProperty( "template.mail.tags.regex" ) ) );
 
         String text = _textTemplateEngine.process("MailTest", _contextTemplateEngine);
 
         return text;
     }
+    //#endregion
 }

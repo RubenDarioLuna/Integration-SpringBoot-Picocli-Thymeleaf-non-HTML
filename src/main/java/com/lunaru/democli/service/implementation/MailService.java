@@ -2,11 +2,11 @@ package com.lunaru.democli.service.implementation;
 
 import com.lunaru.democli.common.entities.Mail;
 import com.lunaru.democli.common.exceptions.SendMailException;
+import com.lunaru.democli.common.utilities.Properties;
 import com.lunaru.democli.service.contracts.IMailService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -15,25 +15,37 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+/**
+ * *
+ *
+ * @author ruben
+ * @version 1.0
+ * @since 3/1/2021
+ */
 @Service( "MailService" )
-public class MailService implements IMailService
+public class MailService extends BaseService implements IMailService
 {
-    private static final Logger LOGGER= LoggerFactory.getLogger( MailService.class );
+    //#region Static Attributes
+    private static final Logger LOGGER = LoggerFactory.getLogger( MailService.class );
     private static final String NOREPLY_ADDRESS = "noreply@picocli.info";
+    //#endregion
 
-    private final Environment _properties;
+    //#region Privates Attributes
     private final JavaMailSender _emailSender;
+    //#endregion
 
-    public MailService( JavaMailSender emailSender, Environment properties )
+    //#region Constructors
+    /**
+     * Class constructor.
+     */
+    public MailService( JavaMailSender emailSender )
     {
-        LOGGER.debug( "Entering Constructor MailService" );
         //Autowiring
-        this._properties = properties;
         this._emailSender = emailSender;
-
-        LOGGER.debug( "Levering Constructor MailService" );
     }
+    //#endregion
 
+    //#region Public Methods
     @Override
     public void sendMessage( Mail mail ) throws SendMailException
     {
@@ -50,20 +62,16 @@ public class MailService implements IMailService
             if( mail.getFile() != null && mail.getFile().exists() )
                 helper.addAttachment( mail.getFile().getName(), mail.getFile() );
 
-            _emailSender.send( message );
-
-            /*LOGGER.info( _properties.getProperty( "logger.mailSent" ), mail.getTo(), mail.getSubject(),
-                         mail.getBody() );*/
+            //_emailSender.send( message );
         }
         catch ( MailException | MessagingException e)
         {
-            //LOGGER.error( _properties.getProperty( "error.mailNotSent" ), e );
-            throw new SendMailException( _properties.getProperty( "error.mailNotSent" ), e );
+            throw new SendMailException( Properties.getProperty( "error.mailNotSent" ), e );
         }
         catch ( Exception e )
         {
-            //LOGGER.error( _properties.getProperty( "error.general" ), e );
-            throw new SendMailException( _properties.getProperty( "error.mailGeneral" ),e );
+            throw new SendMailException( Properties.getProperty( "error.mailGeneral" ),e );
         }
     }
+    //#endregion
 }

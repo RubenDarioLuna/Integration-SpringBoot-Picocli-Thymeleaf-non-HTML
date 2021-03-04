@@ -6,19 +6,39 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * *
+ *
+ * @author ruben
+ * @version 1.0
+ * @since 3/1/2021
+ */
 @Component
 public class Mail
 {
+    //#region Privates Attributes
     private String _from;
     private String[] _to;
     private String _subject;
     private String _body;
     private File _file;
+    //#endregion
 
+    //#region Constructs
+    /**
+     * Class constructor.
+     */
     public Mail()
     {
     }
 
+    /**
+     * Class constructor.
+     * @param to
+     * @param subject
+     * @param body
+     * @param file
+     */
     public Mail( String[] to, String subject, String body, File file )
     {
         _to = to;
@@ -27,6 +47,14 @@ public class Mail
         _file = file;
     }
 
+    /**
+     * Class constructor.
+     * @param from
+     * @param to
+     * @param subject
+     * @param body
+     * @param file
+     */
     public Mail( String from, String[] to, String subject, String body, File file )
     {
         _from = from;
@@ -35,7 +63,9 @@ public class Mail
         _body = body;
         _file = file;
     }
+    //#endregion
 
+    //#region Getters and Setters
     public String[] getTo()
     {
         return _to;
@@ -75,7 +105,9 @@ public class Mail
     {
         _file = file;
     }
+    //#endregion
 
+    //#region Public Methods
     @Override
     public String toString()
     {
@@ -106,4 +138,5 @@ public class Mail
     {
         return Objects.hash( _subject, _body, _file );
     }
+    //#endregion
 }

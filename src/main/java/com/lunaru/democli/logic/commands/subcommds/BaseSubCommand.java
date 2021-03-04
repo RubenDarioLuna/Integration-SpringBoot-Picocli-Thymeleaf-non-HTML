@@ -1,8 +1,11 @@
 package com.lunaru.democli.logic.commands.subcommds;
 
-import org.springframework.core.env.Environment;
+import com.lunaru.democli.common.utilities.Properties;
+import com.lunaru.democli.logic.commands.MainCommand;
+import com.lunaru.democli.service.implementation.MailService;
 
-import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import picocli.CommandLine;
 
@@ -15,30 +18,54 @@ import picocli.CommandLine;
  */
 public abstract class BaseSubCommand
 {
-    protected Environment _properties;
+    //#region Protected Static Attributes
+    protected static final Logger LOGGER = LoggerFactory.getLogger( MailService.class );
+    //#endregion
 
+    //#region Protected Parameters
+    @CommandLine.ParentCommand
+    protected MainCommand _parent;
     protected String _printMessage;
     protected boolean _ok;
+    //#endregion
 
+    //#region Constructors
     /**
      * Class constructor.
      */
     public BaseSubCommand()
     {
-        super();
+        this._printMessage = "";
+        this._ok = false;
     }
+    //#endregion
 
+    //#region Protected Methods
     protected void printMessage(  )
     {
         _printMessage = String.format( CommandLine.Help.Ansi.AUTO.string(
-                _properties.getProperty( "printTemplateMessage.correct" ) ), _printMessage );
+                Properties.getProperty( "printTemplateMessage.correct" ) ), _printMessage );
         System.out.println( _printMessage );
     }
 
     protected void printErrorMessage(  )
     {
         _printMessage = String.format( CommandLine.Help.Ansi.AUTO.string(
-                _properties.getProperty( "printTemplateMessage.error" ) ), _printMessage );
+                Properties.getProperty( "printTemplateMessage.error" ) ), _printMessage );
         System.out.println( _printMessage );
     }
+
+    protected void printErrorMessage( String errorMessage )
+    {
+        _printMessage = String.format( CommandLine.Help.Ansi.AUTO.string(
+                Properties.getProperty( "printTemplateMessage.error" ) ), _printMessage );
+        System.out.println( _printMessage + errorMessage );
+    }
+
+    protected String[] splitStringBy( String string, String regex )
+    {
+        String[] result = string.split( regex );
+        return result;
+    }
+    //#endregion Region
 }
