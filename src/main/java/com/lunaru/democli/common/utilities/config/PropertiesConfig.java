@@ -15,7 +15,8 @@ import org.springframework.context.annotation.PropertySources;
 @PropertySources({
     @PropertySource("classpath:info.properties"),
     @PropertySource("classpath:errors.properties"),
-    @PropertySource("classpath:commandInfo.properties")
+    @PropertySource("classpath:commandInfo.properties"),
+    @PropertySource("classpath:startSpringIo.properties")
 })
 public class PropertiesConfig
 {

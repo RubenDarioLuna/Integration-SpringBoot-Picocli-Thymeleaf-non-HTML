@@ -11,7 +11,6 @@ import org.thymeleaf.context.Context;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.concurrent.Callable;
 
 import picocli.CommandLine;
 
@@ -34,7 +33,7 @@ import picocli.CommandLine;
                       description = "This command sends an mail to different destinations!.%n",
                       mixinStandardHelpOptions = true )
 //The mixinStandardHelpOptions attribute adds --help and --version options
-public class SubCommandSendMail extends BaseSubCommand implements Callable<Integer>
+public class SubCommandSendMail extends BaseSubCommand implements Runnable
 {
     //#region Privates Attributes
     private IMailService _mailService;
@@ -68,7 +67,10 @@ public class SubCommandSendMail extends BaseSubCommand implements Callable<Integ
      * @param mail
      */
     public SubCommandSendMail( IMailService mailService, TemplateEngine textTemplateEngine,
-                               Context contextTemplateEngine, Mail mail ) {
+                               Context contextTemplateEngine, Mail mail )
+    {
+        super();
+
         //Autowiring
         _mailService = mailService;
         _textTemplateEngine = textTemplateEngine;
@@ -79,7 +81,7 @@ public class SubCommandSendMail extends BaseSubCommand implements Callable<Integ
 
     //#region Public Methods
     @Override
-    public Integer call()
+    public void run()
     {
         try
         {
@@ -88,9 +90,7 @@ public class SubCommandSendMail extends BaseSubCommand implements Callable<Integ
 
             _printMessage = String.format( Properties.getProperty( "message.mailSent" ),
                                            Arrays.toString( _mail.getTo() ), _mail.getSubject(), _mail.getBody() );
-            printMessage();
-
-            _ok = true;
+            printCorrectMessage();
         }
         catch ( SendMailException e)
         {
@@ -102,8 +102,6 @@ public class SubCommandSendMail extends BaseSubCommand implements Callable<Integ
             _printMessage = Properties.getProperty( "error.general" );
             printErrorMessage( e.getMessage() );
         }
-
-        return _ok ? 0 : 1;
     }
     //#endregion
 

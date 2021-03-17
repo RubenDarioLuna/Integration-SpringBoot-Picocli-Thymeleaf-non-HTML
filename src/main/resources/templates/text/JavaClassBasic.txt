@@ -4,12 +4,11 @@ package [(${class.package})]
 {
     //attributes
     [# th:each="attribute : ${class.attributes}" ]
-         /**
-            [(${attribute.comment})]
-         */
-         [(${attribute.typeAccess})] [(${attribute.type})] [(${attribute.name})];
+    /**
+    [(${attribute.comment})]
+    */
+    [(${attribute.typeAccess})] [(${attribute.type})] [(${attribute.name})];
     [/]
-
     public [(${class.name})]()
     {}
 }

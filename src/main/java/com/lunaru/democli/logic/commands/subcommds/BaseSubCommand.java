@@ -7,6 +7,10 @@ import com.lunaru.democli.service.implementation.MailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import picocli.CommandLine;
 
 /**
@@ -18,15 +22,10 @@ import picocli.CommandLine;
  */
 public abstract class BaseSubCommand
 {
-    //#region Protected Static Attributes
-    protected static final Logger LOGGER = LoggerFactory.getLogger( MailService.class );
-    //#endregion
-
     //#region Protected Parameters
     @CommandLine.ParentCommand
     protected MainCommand _parent;
     protected String _printMessage;
-    protected boolean _ok;
     //#endregion
 
     //#region Constructors
@@ -36,12 +35,16 @@ public abstract class BaseSubCommand
     public BaseSubCommand()
     {
         this._printMessage = "";
-        this._ok = false;
     }
     //#endregion
 
     //#region Protected Methods
-    protected void printMessage(  )
+    protected void printMessage()
+    {
+        System.out.println( _printMessage );
+    }
+
+    protected void printCorrectMessage(  )
     {
         _printMessage = String.format( CommandLine.Help.Ansi.AUTO.string(
                 Properties.getProperty( "printTemplateMessage.correct" ) ), _printMessage );
@@ -60,6 +63,16 @@ public abstract class BaseSubCommand
         _printMessage = String.format( CommandLine.Help.Ansi.AUTO.string(
                 Properties.getProperty( "printTemplateMessage.error" ) ), _printMessage );
         System.out.println( _printMessage + errorMessage );
+    }
+
+    public void printResults(Process process) throws IOException
+    {
+        BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream() ) );
+
+        while ( ( _printMessage = reader.readLine() ) != null )
+        {
+            System.out.println( _printMessage );
+        }
     }
 
     protected String[] splitStringBy( String string, String regex )
